@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>NumeriCode – Numerical Methods in Computing</title>
+<style>
+:root{--bg:#f2f9fe;--card:#fff;--txt:#17283a;--mut:#51657a;--pri:#0ea5e9;--acc:#0d9488;--bd:#d3e6f3;--fm:#e6f5fd;color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f1a24;--card:#16232f;--txt:#e6f1fa;--mut:#9bb3c7;--pri:#7dd3fc;--acc:#2dd4bf;--bd:#27394a;--fm:#1d3041;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0f1a24;--card:#16232f;--txt:#e6f1fa;--mut:#9bb3c7;--pri:#7dd3fc;--acc:#2dd4bf;--bd:#27394a;--fm:#1d3041;color-scheme:dark}
+*{box-sizing:border-box}html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--txt);font:16px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+header{background:linear-gradient(135deg,var(--pri),var(--acc));color:#fff;padding:32px 20px;text-align:center}
+header h1{margin:0 0 6px;font-size:2rem}header p{margin:0;opacity:.92}
+nav{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;padding:14px;position:sticky;top:env(safe-area-inset-top,0px);background:var(--bg);z-index:5;border-bottom:1px solid var(--bd)}
+nav button{border:1px solid var(--bd);background:var(--card);color:var(--txt);padding:8px 16px;border-radius:999px;cursor:pointer;font:inherit;font-weight:600}
+nav button.on{background:var(--pri);color:#fff;border-color:var(--pri)}
+main{max-width:980px;margin:0 auto;padding:18px}
+section{display:none}section.on{display:block}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:18px;margin:14px 0}
+h2{margin:.2em 0 .4em;color:var(--pri)}h3{margin:.2em 0;color:var(--acc)}
+.fm{background:var(--fm);border-left:4px solid var(--pri);padding:10px 14px;border-radius:8px;font:600 1.02rem/1.7 "Cambria Math",Georgia,serif;margin:8px 0;overflow-x:auto}
+.say{color:var(--mut);margin:4px 0}.use{border-left:4px solid var(--acc);padding-left:10px;color:var(--mut);margin:8px 0}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}
+label{display:block;font-size:.85rem;color:var(--mut);margin-top:8px}
+input,select,textarea{width:100%;padding:8px;border:1px solid var(--bd);border-radius:8px;background:var(--bg);color:var(--txt);font:inherit}
+textarea{font-family:ui-monospace,monospace}
+.go{background:var(--pri);color:#fff;border:0;padding:10px 20px;border-radius:10px;font:inherit;font-weight:700;cursor:pointer;margin-top:12px}
+.sc{overflow-x:auto;margin:8px 0}table{border-collapse:collapse;font-size:.9rem;min-width:100%}
+th,td{border:1px solid var(--bd);padding:5px 9px;text-align:right;white-space:nowrap}th{background:var(--fm)}
+td.b{border-left:3px solid var(--acc)}
+.res{background:var(--fm);padding:10px 14px;border-radius:10px;margin:8px 0;font-weight:600}
+canvas{width:100%;height:auto;border:1px solid var(--bd);border-radius:10px;background:var(--card)}
+.step{margin:10px 0;font-size:.9rem;color:var(--mut)}footer{text-align:center;color:var(--mut);padding:24px;font-size:.85rem}
+</style></head><body>
+<header><h1>NumeriCode</h1><p>Numerical Methods – how computers solve maths that has no easy formula</p></header>
+<nav id="nav"></nav>
+<main>
+
+<section id="s0"><div class="card"><h2>Why Numerical Methods?</h2>
+<p>Many problems in computing (graphics, AI training, physics engines, signal processing) cannot be solved with a neat formula. Computers instead use <b>numerical methods</b>: step-by-step recipes that get closer and closer to the answer. This site explains every method in your syllabus with its formula, a simple meaning, and a live tool.</p></div>
+<div class="card"><h2>Types of Errors</h2>
+<p class="say">No computer answer is perfectly exact. The <b>error</b> tells us how far we are from the truth. Let X = true value and X′ = approximate value.</p>
+<div class="fm">Absolute Error  Eₐ = | X − X′ |</div>
+<div class="fm">Relative Error  Eᵣ = Eₐ / | X |</div>
+<div class="fm">Percentage Error  Eₚ = Eᵣ × 100 %</div>
+<p class="use"><b>In computing:</b> floating-point numbers like 0.1 are stored approximately, so tiny errors can add up in long programs.</p>
+<div class="grid"><div><label>True value X</label><input id="et" value="3.14159265"></div><div><label>Approximate value X′</label><input id="ea" value="3.14"></div></div>
+<button class="go" onclick="errs()">Calculate Errors</button><div id="eo"></div></div></section>
+
+<section id="s1"><div class="card"><h2>Solving Equations f(x) = 0</h2>
+<p class="say">We search for the value of x where the curve crosses zero (the “root”). Each method below is a different strategy.</p>
+<div class="grid">
+<div><h3>1. Bisection</h3><div class="fm">c = (a + b) / 2</div><p class="say">Needs f(a)·f(b) &lt; 0. Cut the interval in half, keep the half where the sign changes. Slow but always works. Steps needed: n ≥ log₂((b−a)/ε).</p></div>
+<div><h3>2. Regula-Falsi</h3><div class="fm">c = (a·f(b) − b·f(a)) / (f(b) − f(a))</div><p class="say">Draw a straight line between (a,f(a)) and (b,f(b)); where it hits the x-axis is the next guess.</p></div>
+<div><h3>3. Newton-Raphson</h3><div class="fm">xₙ₊₁ = xₙ − f(xₙ) / f′(xₙ)</div><p class="say">Follow the tangent line down to the axis. Very fast, but needs the derivative and a good start.</p></div>
+<div><h3>4. Secant</h3><div class="fm">xₙ₊₁ = xₙ − f(xₙ)(xₙ − xₙ₋₁) / (f(xₙ) − f(xₙ₋₁))</div><p class="say">Like Newton but replaces f′ with a slope from the two latest points. No derivative needed.</p></div></div>
+<p class="use"><b>In computing:</b> calculators use Newton-Raphson for square roots; games use it for collision timing.</p></div>
+<div class="card"><h3>Root Finder &amp; Method Race</h3>
+<label>f(x) (use x, ^, sin, cos, exp, log, sqrt)</label><input id="fn" value="x^3 - x - 2">
+<div class="grid"><div><label>a (left bracket / secant x₀)</label><input id="ra" value="1"></div><div><label>b (right bracket / secant x₁)</label><input id="rb" value="2"></div><div><label>Newton start x₀</label><input id="rx" value="1.5"></div><div><label>Tolerance</label><input id="rt" value="0.000001"></div></div>
+<label>Show iteration table for</label><select id="rm"><option value="bis">Bisection</option><option value="rf">Regula-Falsi</option><option value="nr">Newton-Raphson</option><option value="sec">Secant</option></select>
+<button class="go" onclick="roots()">Find Root &amp; Compare</button><div id="ro"></div>
+<canvas id="rc" width="700" height="280"></canvas><p class="say">Chart: log₁₀|f(x)| per step. Lines that fall faster converge faster.</p></div></section>
+
+<section id="s2"><div class="card"><h2>Solving Linear Systems  A·x = b</h2>
+<p class="say">Direct methods give the exact answer in a fixed number of steps. Iterative methods start with a guess and improve it repeatedly.</p>
+<div class="grid">
+<div><h3>Gauss Elimination</h3><div class="fm">mᵢⱼ = aᵢⱼ / aⱼⱼ ,  Rᵢ ← Rᵢ − mᵢⱼ·Rⱼ</div><p class="say">Make zeros below the diagonal (upper-triangular), then back-substitute from the last row up.</p></div>
+<div><h3>Gauss-Jordan</h3><div class="fm">Reduce [A | b] → [I | x]</div><p class="say">Keep going until the left side becomes the identity matrix; the right side is the answer directly.</p></div>
+<div><h3>Jacobi Iteration</h3><div class="fm">xᵢ⁽ᵏ⁺¹⁾ = ( bᵢ − Σⱼ≠ᵢ aᵢⱼ xⱼ⁽ᵏ⁾ ) / aᵢᵢ</div><p class="say">Compute every new value using only the <i>old</i> round’s values.</p></div>
+<div><h3>Gauss-Seidel</h3><div class="fm">xᵢ⁽ᵏ⁺¹⁾ = ( bᵢ − Σⱼ&lt;ᵢ aᵢⱼ xⱼ⁽ᵏ⁺¹⁾ − Σⱼ&gt;ᵢ aᵢⱼ xⱼ⁽ᵏ⁾ ) / aᵢᵢ</div><p class="say">Same idea, but uses each new value immediately, so it usually converges faster. Both need a diagonally dominant matrix: |aᵢᵢ| &gt; Σ|aᵢⱼ|.</p></div></div>
+<p class="use"><b>In computing:</b> PageRank, circuit simulation, 3D graphics and machine learning all solve huge linear systems.</p></div>
+<div class="card"><h3>System Solver</h3>
+<label>Augmented matrix [A | b] – one row per line, numbers separated by spaces</label>
+<textarea id="lm" rows="4">10 2 1 13
+1 5 1 7
+2 3 10 15</textarea>
+<div class="grid"><div><label>Method</label><select id="lt"><option value="g">Gauss Elimination</option><option value="j">Gauss-Jordan</option><option value="jc">Jacobi</option><option value="gs">Gauss-Seidel</option></select></div><div><label>Tolerance (iterative)</label><input id="lo" value="0.0001"></div></div>
+<button class="go" onclick="lin()">Solve Step by Step</button><div id="lo2"></div></div></section>
+
+<section id="s3"><div class="card"><h2>Interpolation</h2>
+<p class="say">You know some data points and want a value <i>between</i> them. Interpolation fits one smooth polynomial through all the points. Let h = spacing of x, p = (x − x₀)/h.</p>
+<div class="grid">
+<div><h3>Newton’s Forward</h3><div class="fm">y = y₀ + pΔy₀ + p(p−1)/2!·Δ²y₀ + p(p−1)(p−2)/3!·Δ³y₀ + …</div><p class="say">p = (x − x₀)/h. Best near the <i>start</i> of equally spaced data.</p></div>
+<div><h3>Newton’s Backward</h3><div class="fm">y = yₙ + p∇yₙ + p(p+1)/2!·∇²yₙ + p(p+1)(p+2)/3!·∇³yₙ + …</div><p class="say">p = (x − xₙ)/h. Best near the <i>end</i> of the data.</p></div>
+<div><h3>Lagrange</h3><div class="fm">y = Σᵢ yᵢ · Πⱼ≠ᵢ (x − xⱼ)/(xᵢ − xⱼ)</div><p class="say">Works for unequal spacing too. Each point gets a “weight” that is 1 at itself and 0 at the others.</p></div>
+<div><h3>Newton’s Divided Difference</h3><div class="fm">f[xᵢ,xᵢ₊₁] = (yᵢ₊₁ − yᵢ)/(xᵢ₊₁ − xᵢ)<br>y = f[x₀] + (x−x₀)f[x₀,x₁] + (x−x₀)(x−x₁)f[x₀,x₁,x₂] + …</div><p class="say">Unequal spacing, and adding a new point only adds one new term.</p></div></div>
+<p class="use"><b>In computing:</b> image resizing, animation curves, font outlines and filling missing sensor data.</p></div>
+<div class="card"><h3>Interpolation Lab</h3>
+<div class="grid"><div><label>x values</label><input id="ix" value="1 2 3 4 5"></div><div><label>y values</label><input id="iy" value="1 8 27 64 125"></div><div><label>Find y at x =</label><input id="it" value="2.5"></div></div>
+<button class="go" onclick="interp()">Interpolate</button><div id="io"></div>
+<canvas id="ic" width="700" height="280"></canvas></div></section>
+<section id="s4"><div class="card"><h2>Solved Examples – Every Formula in Action</h2><p class="say">Each solution substitutes numbers into the formula, one step at a time. Compare them with the live tools in the other tabs.</p></div>
+<div class="card"><h3>1. Errors</h3><p>True value X = 50, approximate X′ = 49.5</p><div class="fm">Eₐ = |50 − 49.5| = 0.5<br>Eᵣ = 0.5 / 50 = 0.01<br>Eₚ = 0.01 × 100 = 1 %</div></div>
+<div class="card"><h3>Equations: solve f(x) = x³ − x − 2 = 0</h3><p class="say">f(1) = −2 and f(2) = 4, so a root lies between 1 and 2. Exact root ≈ 1.5214.</p>
+<h3>2. Bisection  [c = (a+b)/2]</h3>
+<div class="sc"><table><tr><th>n</th><th>a</th><th>b</th><th>c</th><th>f(c)</th><th>Next interval</th></tr><tr><td>1</td><td>1</td><td>2</td><td>1.5</td><td>−0.125</td><td>[1.5, 2]</td></tr><tr><td>2</td><td>1.5</td><td>2</td><td>1.75</td><td>1.6094</td><td>[1.5, 1.75]</td></tr><tr><td>3</td><td>1.5</td><td>1.75</td><td>1.625</td><td>0.6660</td><td>[1.5, 1.625]</td></tr><tr><td>4</td><td>1.5</td><td>1.625</td><td>1.5625</td><td>0.2522</td><td>[1.5, 1.5625]</td></tr></table></div><p class="say">The interval halves each time, so the root is about 1.53 after 4 steps.</p>
+<h3>3. Regula-Falsi  [c = (a·f(b) − b·f(a)) / (f(b) − f(a))]</h3>
+<div class="fm">Step 1: c = (1·4 − 2·(−2)) / (4 − (−2)) = 8/6 = 1.3333, f(c) = −0.9630 (negative, so a = 1.3333)<br>Step 2: c = (1.3333·4 − 2·(−0.9630)) / (4 + 0.9630) = 7.2593/4.9630 = 1.4627, f(c) = −0.3333</div>
+<h3>4. Newton-Raphson  [xₙ₊₁ = xₙ − f/f′, with f′ = 3x² − 1]</h3>
+<div class="fm">x₀ = 1.5: f = −0.125, f′ = 5.75 → x₁ = 1.5 + 0.125/5.75 = 1.52174<br>x₁: f = 0.002188, f′ = 5.94707 → x₂ = 1.52174 − 0.000368 = 1.52137</div><p class="say">Only 2 steps to get 4 correct decimals.</p>
+<h3>5. Secant  [x₀ = 1, x₁ = 2]</h3>
+<div class="fm">x₂ = 2 − 4(2−1)/(4−(−2)) = 1.33333, f = −0.96296<br>x₃ = 1.33333 − (−0.96296)(1.33333−2)/(−0.96296−4) = 1.46268, f = −0.33333<br>x₄ = 1.46268 − (−0.33333)(0.12935)/(−0.33333+0.96296) = 1.53116</div></div>
+<div class="card"><h3>Linear systems</h3><p class="say">Gauss &amp; Jordan system: x + y + z = 6, 2x − y + z = 3, x + 2y − z = 2</p>
+<h3>6. Gauss Elimination</h3>
+<div class="fm">[1 &nbsp;1 &nbsp;1 | 6; 2 −1 &nbsp;1 | 3; 1 &nbsp;2 −1 | 2]<br>R₂ ← R₂ − 2R₁ : [0 −3 −1 | −9]<br>R₃ ← R₃ − R₁ : [0 &nbsp;1 −2 | −4]<br>R₃ ← R₃ + (1/3)R₂ : [0 &nbsp;0 −7/3 | −7]<br>Back-substitution: z = −7 ÷ (−7/3) = 3; −3y − 3 = −9 → y = 2; x + 2 + 3 = 6 → x = 1</div>
+<h3>7. Gauss-Jordan (continue from the triangle)</h3>
+<div class="fm">R₂ ÷ (−3) : [0 1 1/3 | 3]; R₃ × (−3/7) : [0 0 1 | 3]<br>R₁ ← R₁ − R₂ : [1 0 2/3 | 3]<br>R₁ ← R₁ − (2/3)R₃ and R₂ ← R₂ − (1/3)R₃<br>Result [I | x]: x = 1, y = 2, z = 3</div>
+<p class="say">Iterative system: 10x + 2y + z = 13, x + 5y + z = 7, 2x + 3y + 10z = 15 (true answer x = y = z = 1). Rearranged: x = (13 − 2y − z)/10, y = (7 − x − z)/5, z = (15 − 2x − 3y)/10. Start (0, 0, 0).</p>
+<h3>8. Jacobi (uses old values only)</h3>
+<div class="sc"><table><tr><th>k</th><th>x</th><th>y</th><th>z</th></tr><tr><td>1</td><td>1.3</td><td>1.4</td><td>1.5</td></tr><tr><td>2</td><td>0.87</td><td>0.84</td><td>0.82</td></tr><tr><td>3</td><td>1.05</td><td>1.062</td><td>1.074</td></tr></table></div>
+<h3>9. Gauss-Seidel (uses newest values at once)</h3>
+<div class="sc"><table><tr><th>k</th><th>x</th><th>y</th><th>z</th></tr><tr><td>1</td><td>1.3</td><td>1.14</td><td>0.898</td></tr><tr><td>2</td><td>0.9822</td><td>1.0240</td><td>0.9964</td></tr><tr><td>3</td><td>0.9956</td><td>1.0016</td><td>1.0004</td></tr></table></div><p class="say">After 3 rounds Gauss-Seidel is already much closer to (1, 1, 1) than Jacobi.</p></div>
+<div class="card"><h3>Interpolation</h3><p class="say">Data for Newton: x = 1, 2, 3, 4 and y = 1, 8, 27, 64 (this is y = x³). Differences: Δy = 7, 19, 37; Δ²y = 12, 18; Δ³y = 6.</p>
+<h3>10a. Newton Forward, find y(1.5): h = 1, p = (1.5 − 1)/1 = 0.5</h3>
+<div class="fm">y = 1 + (0.5)(7) + [(0.5)(−0.5)/2!](12) + [(0.5)(−0.5)(−1.5)/3!](6)<br>= 1 + 3.5 − 1.5 + 0.375 = 3.375 ✓ (1.5³)</div>
+<h3>10b. Newton Backward, find y(3.5): xₙ = 4, p = (3.5 − 4)/1 = −0.5</h3>
+<div class="fm">y = 64 + (−0.5)(37) + [(−0.5)(0.5)/2!](18) + [(−0.5)(0.5)(1.5)/3!](6)<br>= 64 − 18.5 − 2.25 − 0.375 = 42.875 ✓ (3.5³)</div>
+<p class="say">Unequal spacing: points (1, 1), (2, 8), (4, 64). Find y(3).</p>
+<h3>11. Lagrange</h3>
+<div class="fm">L₀ = (3−2)(3−4) / ((1−2)(1−4)) = −1/3<br>L₁ = (3−1)(3−4) / ((2−1)(2−4)) = 1<br>L₂ = (3−1)(3−2) / ((4−1)(4−2)) = 1/3<br>y = 1(−1/3) + 8(1) + 64(1/3) = 29</div>
+<h3>12. Newton’s Divided Difference</h3>
+<div class="fm">f[1,2] = (8−1)/(2−1) = 7 &nbsp; f[2,4] = (64−8)/(4−2) = 28<br>f[1,2,4] = (28 − 7)/(4 − 1) = 7<br>y(3) = 1 + (3−1)(7) + (3−1)(3−2)(7) = 1 + 14 + 14 = 29</div>
+<p class="say">Lagrange and Divided Difference give the same 29 because they build the same polynomial. It is not exactly 27 because only 3 points were used.</p></div></section>
+</main>
+<footer>Foundation of Mathematics · Unit 2 · Numerical Methods</footer>
+
+<script>
+const $=id=>document.getElementById(id),N=v=>isFinite(v)?String(+(+v).toPrecision(7)):'∞';
+const T=(h,r)=>'<div class="sc"><table><tr>'+h.map(x=>'<th>'+x+'</th>').join('')+'</tr>'+r.map(a=>'<tr>'+a.map(c=>'<td>'+c+'</td>').join('')+'</tr>').join('')+'</table></div>';
+const M=m=>'<div class="sc"><table>'+m.map(r=>'<tr>'+r.map((v,j)=>'<td'+(j==r.length-1?' class="b"':'')+'>'+N(Math.abs(v)<1e-12?0:v)+'</td>').join('')+'</tr>').join('')+'</table></div>';
+const names=['Basics & Errors','Equations','Linear Systems','Interpolation','Solved Examples'];
+$('nav').innerHTML=names.map((n,i)=>'<button onclick="tab('+i+')">'+n+'</button>').join('');
+function tab(i){document.querySelectorAll('section').forEach((s,k)=>s.classList.toggle('on',k==i));document.querySelectorAll('nav button').forEach((b,k)=>b.classList.toggle('on',k==i))}tab(0);
+function errs(){const X=+$('et').value,A=+$('ea').value,e=Math.abs(X-A),r=e/Math.abs(X);
+$('eo').innerHTML='<div class="res">Absolute = |'+X+' − '+A+'| = '+N(e)+'<br>Relative = '+N(e)+' / '+Math.abs(X)+' = '+N(r)+'<br>Percentage = '+N(r)+' × 100 = '+N(r*100)+' %</div>'}errs();
+function plot(cv,S,dots){const c=cv.getContext('2d'),W=cv.width,H=cv.height,col=getComputedStyle(document.body).color;c.clearRect(0,0,W,H);
+let P=S.flatMap(s=>s.p).concat(dots||[]);if(!P.length)return;let x0=Math.min(...P.map(p=>p[0])),x1=Math.max(...P.map(p=>p[0])),y0=Math.min(...P.map(p=>p[1])),y1=Math.max(...P.map(p=>p[1]));
+if(x1==x0)x1=x0+1;if(y1==y0)y1=y0+1;const m=34,X=x=>m+(x-x0)/(x1-x0)*(W-2*m),Y=y=>H-m-(y-y0)/(y1-y0)*(H-2*m);
+c.strokeStyle=col;c.globalAlpha=.3;c.strokeRect(m,m,W-2*m,H-2*m);c.globalAlpha=1;c.fillStyle=col;c.font='12px sans-serif';
+c.fillText(N(x0),m,H-10);c.fillText(N(x1),W-m-20,H-10);c.fillText(N(y1),2,m+4);c.fillText(N(y0),2,H-m);
+S.forEach((s,k)=>{c.strokeStyle=s.c;c.lineWidth=2;c.beginPath();s.p.forEach((p,i)=>i?c.lineTo(X(p[0]),Y(p[1])):c.moveTo(X(p[0]),Y(p[1])));c.stroke();c.fillStyle=s.c;c.fillText(s.n||'',m+8+k*110,m+16)});
+(dots||[]).forEach(p=>{c.fillStyle='#e11d48';c.beginPath();c.arc(X(p[0]),Y(p[1]),5,0,7);c.fill()})}
+function mk(s){s=s.replace(/\^/g,'**').replace(/\bln\b/g,'log').replace(/\bpi\b/g,'PI');return new Function('x','with(Math){return '+s+'}')}
+function solve(t,f,a,b,x0,tol){const R=[];const d=x=>(f(x+1e-6)-f(x-1e-6))/2e-6;let x=0;
+if(t=='bis'||t=='rf'){for(let i=0;i<60;i++){const c=t=='bis'?(a+b)/2:(a*f(b)-b*f(a))/(f(b)-f(a));R.push([i+1,c,f(c),i?Math.abs(c-x):Math.abs(b-a)]);const done=Math.abs(f(c))<tol||(i&&Math.abs(c-x)<tol);x=c;if(done)break;f(a)*f(c)<0?b=c:a=c}}
+else if(t=='nr'){x=x0;for(let i=0;i<60;i++){const n=x-f(x)/d(x);R.push([i+1,n,f(n),Math.abs(n-x)]);const done=Math.abs(n-x)<tol;x=n;if(done||!isFinite(n))break}}
+else{let p=a,q=b;for(let i=0;i<60;i++){const n=q-f(q)*(q-p)/(f(q)-f(p));R.push([i+1,n,f(n),Math.abs(n-q)]);const done=Math.abs(n-q)<tol;p=q;q=n;if(done||!isFinite(n))break}}return R}
+function roots(){try{const f=mk($('fn').value),a=+$('ra').value,b=+$('rb').value,x0=+$('rx').value,tol=+$('rt').value;
+if(f(a)*f(b)>=0)$('ro').innerHTML='<div class="res">Note: f(a) and f(b) have the same sign, so bisection and regula-falsi need a different bracket.</div>';else $('ro').innerHTML='';
+const L=[['bis','Bisection','#0ea5e9'],['rf','Regula-Falsi','#0d9488'],['nr','Newton','#e11d48'],['sec','Secant','#d97706']],S=[],rows=[];
+L.forEach(([t,n,c])=>{const R=solve(t,f,a,b,x0,tol),l=R[R.length-1];rows.push([n,R.length,l?N(l[1]):'–',l?N(Math.abs(l[2])):'–']);S.push({n,c,p:R.map((r,i)=>[i+1,Math.log10(Math.max(Math.abs(r[2]),1e-16))])})});
+const t=$('rm').value,R=solve(t,f,a,b,x0,tol);
+$('ro').innerHTML+=T(['Method','Iterations','Root found','|f(root)|'],rows)+'<h3>'+L.find(l=>l[0]==t)[1]+' – step by step</h3>'+T(['n','xₙ','f(xₙ)','Change |Δx|'],R.map(r=>[r[0],N(r[1]),N(r[2]),N(r[3])]));
+plot($('rc'),S)}catch(e){$('ro').innerHTML='<div class="res">Please check your function or numbers.</div>'}}
+function lin(){const rows=$('lm').value.trim().split('\n').map(r=>r.trim().split(/[\s,]+/).map(Number)),n=rows.length,t=$('lt').value,tol=+$('lo').value,o=$('lo2');
+if(rows.some(r=>r.length!=n+1||r.some(isNaN))){o.innerHTML='<div class="res">Enter an n × (n+1) matrix.</div>';return}
+if(t=='g'||t=='j'){const A=rows.map(r=>r.slice()),J=t=='j';let h='<div class="step">Start</div>'+M(A);
+for(let k=0;k<n;k++){let p=k;for(let i=k;i<n;i++)if(Math.abs(A[i][k])>Math.abs(A[p][k]))p=i;if(Math.abs(A[p][k])<1e-12){o.innerHTML='<div class="res">Matrix is singular – no unique solution.</div>';return}
+[A[k],A[p]]=[A[p],A[k]];if(J){const d=A[k][k];A[k]=A[k].map(v=>v/d)}
+for(let i=J?0:k+1;i<n;i++)if(i!=k){const m=A[i][k]/A[k][k];A[i]=A[i].map((v,j)=>v-m*A[k][j])}
+h+='<div class="step">Column '+(k+1)+' cleared (pivot row '+(k+1)+')</div>'+M(A)}
+const x=Array(n).fill(0);for(let i=n-1;i>=0;i--){let s=A[i][n];for(let j=i+1;j<n;j++)s-=A[i][j]*x[j];x[i]=s/A[i][i]}
+o.innerHTML=h+'<div class="res">'+(J?'Identity reached. ':'Back-substitution done. ')+x.map((v,i)=>'x'+(i+1)+' = '+N(v)).join(', ')+'</div>'}
+else{const S=t=='gs';let x=Array(n).fill(0),R=[];if(rows.some((r,i)=>!r[i])){o.innerHTML='<div class="res">A diagonal element is zero – rearrange the rows.</div>';return}
+const dom=rows.every((r,i)=>Math.abs(r[i])>r.slice(0,n).reduce((s,v,j)=>j==i?s:s+Math.abs(v),0));
+for(let k=1;k<=50;k++){const old=x.slice();for(let i=0;i<n;i++){let s=rows[i][n];for(let j=0;j<n;j++)if(j!=i)s-=rows[i][j]*(S?x[j]:old[j]);x[i]=s/rows[i][i]}
+const e=Math.max(...x.map((v,i)=>Math.abs(v-old[i])));R.push([k,...x.map(N),N(e)]);if(e<tol)break}
+o.innerHTML=(dom?'':'<div class="res">Warning: matrix is not diagonally dominant, so it may not converge.</div>')+T(['k',...x.map((_,i)=>'x'+(i+1)),'Max change'],R)+'<div class="res">After '+R.length+' iterations: '+x.map((v,i)=>'x'+(i+1)+' ≈ '+N(v)).join(', ')+'</div>'}}lin();
+function interp(){const xs=$('ix').value.trim().split(/[\s,]+/).map(Number),ys=$('iy').value.trim().split(/[\s,]+/).map(Number),x=+$('it').value,n=xs.length,o=$('io');
+if(n<2||n!=ys.length||xs.concat(ys,[x]).some(isNaN)){o.innerHTML='<div class="res">Enter equal counts of x and y values.</div>';return}
+const d=[ys.slice()];for(let k=1;k<n;k++)d.push(d[k-1].slice(1).map((v,i)=>v-d[k-1][i]));
+const h=xs[1]-xs[0],eq=xs.every((v,i)=>Math.abs(v-xs[0]-i*h)<1e-9);
+const lag=z=>xs.reduce((s,xi,i)=>s+ys[i]*xs.reduce((p,xj,j)=>j==i?p:p*(z-xj)/(xi-xj),1),0);
+const dd=[ys.slice()];for(let k=1;k<n;k++)dd.push(dd[k-1].slice(1).map((v,i)=>(v-dd[k-1][i])/(xs[i+k]-xs[i])));
+const nd=z=>{let s=0,p=1;for(let k=0;k<n;k++){s+=dd[k][0]*p;p*=z-xs[k]}return s};
+let h2='';
+h2+='<h3>Difference table (Δ)</h3>'+T(['x','y',...d.slice(1).map((_,k)=>'Δ'+(k+1)+'y')],xs.map((v,i)=>[N(v),N(ys[i]),...d.slice(1).map(c=>i<c.length?N(c[i]):'')]));
+h2+='<h3>Divided differences</h3>'+T(['x','f[x]',...dd.slice(1).map((_,k)=>'order '+(k+1))],xs.map((v,i)=>[N(v),N(ys[i]),...dd.slice(1).map(c=>i<c.length?N(c[i]):'')]));
+let r='';
+if(eq){const p=(x-xs[0])/h,q=(x-xs[n-1])/h;let f=0,t=1;for(let k=0;k<n;k++){f+=t*d[k][0];t*=(p-k)/(k+1)}let b=0;t=1;for(let k=0;k<n;k++){b+=t*d[k][n-1-k];t*=(q+k)/(k+1)}
+r+='<div class="res">Newton Forward: h = '+N(h)+', p = '+N(p)+' → y = '+N(f)+'<br>Newton Backward: p = '+N(q)+' → y = '+N(b)+'</div>'}
+else r+='<div class="res">Forward/Backward need equally spaced x values – your data is unequal, so use Lagrange or Divided Difference.</div>';
+r+='<div class="res">Lagrange → y('+x+') = '+N(lag(x))+'<br>Divided Difference → y('+x+') = '+N(nd(x))+'</div><p class="say">All methods agree because only one polynomial of degree n−1 passes through n points. Red dots = your data.</p>';
+o.innerHTML=r+h2;const a=Math.min(...xs,x),b=Math.max(...xs,x),pts=[];for(let i=0;i<=80;i++){const z=a+(b-a)*i/80;pts.push([z,lag(z)])}
+plot($('ic'),[{n:'Polynomial',c:'#0ea5e9',p:pts}],xs.map((v,i)=>[v,ys[i]]).concat([[x,lag(x)]]))}
+interp();
+</script></body></html>
